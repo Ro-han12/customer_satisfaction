@@ -19,5 +19,6 @@ streamlit
 xgboost
 pyyaml
 zenml
+scikit-learn
 
 
