@@ -1,12 +1,16 @@
-import logging 
-import pandas as pd 
-from zenml import step 
-from src.data_cleaning import DataCleaning,DataSplitStrategy,DataPreProcesStrategy
+import logging
+import pandas as pd
+from zenml import step
+from src.data_cleaning import (
+    DataCleaning,
+    DataSplitStrategy,
+    DataPreprocessStrategy,
+)
 from typing_extensions import Annotated
 from typing import Tuple
 
 @step
-def clean_data(
+def clean_df(
     data: pd.DataFrame,
 ) -> Tuple[
     Annotated[pd.DataFrame, "x_train"],
@@ -16,14 +20,14 @@ def clean_data(
 ]:
     try:
         preprocess_strategy = DataPreprocessStrategy()
-        data_cleaning = DataCleaning(data, preprocess_strategy)
-        preprocessed_data = data_cleaning.handle_data()
+        data_cleaning_preprocess = DataCleaning(data, preprocess_strategy)
+        preprocessed_data = data_cleaning_preprocess.handle_data()
 
         divide_strategy = DataSplitStrategy()
-        data_cleaning = DataCleaning(preprocessed_data, divide_strategy)
-        x_train, x_test, y_train, y_test = data_cleaning.handle_data()
-        logging.info("data cleaning completed")
+        data_cleaning_split = DataCleaning(preprocessed_data, divide_strategy)
+        x_train, x_test, y_train, y_test = data_cleaning_split.handle_data()
+
+        return x_train, x_test, y_train, y_test
     except Exception as e:
-        logging.error("error in cleaning data: {}".format(e))
+        logging.error(e)
         raise e
-        
