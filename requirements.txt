@@ -20,5 +20,6 @@ xgboost
 pyyaml
 zenml
 scikit-learn
+mlflow
 
 
