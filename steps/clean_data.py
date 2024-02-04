@@ -1,13 +1,17 @@
 import logging
+from typing import Tuple
+
 import pandas as pd
-from zenml import step
-from src.data_cleaning import (
+from model.data_cleaning import (
     DataCleaning,
-    DataSplitStrategy,
+    DataDivideStrategy,
     DataPreprocessStrategy,
 )
 from typing_extensions import Annotated
-from typing import Tuple
+
+# from zenml.steps import Output, step
+from zenml import step
+
 
 @step
 def clean_df(
@@ -18,15 +22,19 @@ def clean_df(
     Annotated[pd.Series, "y_train"],
     Annotated[pd.Series, "y_test"],
 ]:
+    """Data cleaning class which preprocesses the data and divides it into train and test data.
+
+    Args:
+        data: pd.DataFrame
+    """
     try:
         preprocess_strategy = DataPreprocessStrategy()
-        data_cleaning_preprocess = DataCleaning(data, preprocess_strategy)
-        preprocessed_data = data_cleaning_preprocess.handle_data()
+        data_cleaning = DataCleaning(data, preprocess_strategy)
+        preprocessed_data = data_cleaning.handle_data()
 
-        divide_strategy = DataSplitStrategy()
-        data_cleaning_split = DataCleaning(preprocessed_data, divide_strategy)
-        x_train, x_test, y_train, y_test = data_cleaning_split.handle_data()
-
+        divide_strategy = DataDivideStrategy()
+        data_cleaning = DataCleaning(preprocessed_data, divide_strategy)
+        x_train, x_test, y_train, y_test = data_cleaning.handle_data()
         return x_train, x_test, y_train, y_test
     except Exception as e:
         logging.error(e)
